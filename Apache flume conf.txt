@@ -1,0 +1,46 @@
+simple-flume.conf file 
+
+
+# Flume Components
+agent.sources = tail-source
+agent.sinks = hdfs-sink
+agent.channels = memory-channel
+
+
+# Source
+agent.sources.tail-source.type = exec
+agent.sources.tail-source.command = tail -F logfile.log
+agent.sources.tail-source.channels = memory-channel
+
+
+# Define a sink that outputs to local file.
+agent.sinks.hdfs-sink.type = hdfs
+agent.sinks.hdfs-sink.hdfs.path = /flume/simple
+agent.sinks.hdfs-sink.hdfs.fileType = DataStream
+agent.sinks.hdfs-sink.channel = memory-channel
+
+
+# Channels
+agent.channels.memory-channel.type = memory
+
+
+
+
+
+write-to-file.sh
+
+
+#!/bin/bash
+rm logfile.log
+i=0
+while :
+do
+    echo "Hadoop in Real World Developer $i" >> logfile.log
+    i=`expr $i + 1`
+    echo "sleeping for 5 seconds..."
+    sleep 5
+done
+ 
+command.txt
+
+flume-ng agent --conf /home/ubh01/flume/simple/ -f /home/ubh01/flume/simple/simple-flume.conf -Dflume.root.logger=DEBUG,console -n agent
